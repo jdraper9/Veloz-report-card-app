@@ -1,19 +1,19 @@
 var express = require('express');
-var Students = require('../models/students');
+var Grades = require('../models/grades');
 
 var router = express.Router();
 
 router.get('/', function (req, res) {
-  Students.retrieveAll(function (err, students) {
+  Grades.retrieveAll(function (err, grades) {
     if (err) return res.json(err);
-    return res.json(students);
+    return res.json(grades);
   });
 });
 
 router.post('/', function (req, res) {
-  var student = req.body.student;
+  var grade = req.body.grade;
 
-  Students.insert(student, function (err, result) {
+  Grades.insert(grade, function (err, result) {
     if (err) return res.json(err);
     return res.json(result);
   });

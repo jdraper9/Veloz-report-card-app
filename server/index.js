@@ -14,6 +14,7 @@ app.use(bodyParser.json());
 
 // register api middleware
 app.use('/api/students', require('./api/students'));
+app.use('/api/grades', require('./api/grades'));
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);

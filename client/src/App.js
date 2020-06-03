@@ -1,4 +1,5 @@
 import React from 'react';
+import CourseTable from './components/CourseTable';
 
 import './App.css';
 
@@ -8,9 +9,75 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    // this.state = {
-    // };
+    this.state = {
+      semesters: {},
+      gpa: null,
+    };
   }
+
+  componentDidMount() {
+    this.getGradeList();
+  }
+
+  getGradeList = () => {
+    fetch('/api/grades')
+      .then((res) => res.json())
+      .then((res) => {
+        // res is json returned from db. Send to React state in correct array / object format.
+        // console.log(res);
+        let semesters = {};
+        for (const key in res) {
+          let grade = res[key];
+          // if a semester key isn't added yet, add one
+          if (!semesters[grade.semester]) {
+            semesters[grade.semester] = [];
+          }
+          semesters[grade.semester].push([
+            grade.course_name,
+            grade.letter,
+            grade.grade_id,
+          ]);
+        }
+        this.setState({ semesters }, this.calcGPA);
+      });
+  };
+
+  calcGPA = () => {
+    const letterMap = {
+      A: 5,
+      'A-': 4.5,
+      'B+': 4.5,
+      B: 4,
+      'B-': 3.5,
+      'C+': 3.5,
+      C: 3,
+      'C-': 2.5,
+      'D+': 2.5,
+      D: 2,
+      'D-': 1.5,
+      'F+': 1.5,
+      F: 1,
+    };
+    console.log(this.state.semesters);
+  };
+
+  _renderGrades = () => {
+    return Object.entries(this.state.semesters)
+      .slice(0)
+      .reverse()
+      .map(([semester, courses], i) => {
+        return (
+          <Table borderless key={i}>
+            <thead>
+              <tr>
+                <th style={{ width: '40%', fontSize: '1.5rem' }}>{semester}</th>
+              </tr>
+            </thead>
+            <CourseTable courses={courses} />
+          </Table>
+        );
+      });
+  };
 
   render() {
     return (
@@ -23,22 +90,10 @@ class App extends React.Component {
             123-456-789
           </span>
         </Navbar>
-        {/* <Row>
-          <Col md={{ offset: 1 }}>Name</Col>
-          <Col md={{ offset: 1 }}>John Doe</Col>
-          <Col></Col>
-          <Col></Col>
-        </Row>
-        <Row>
-          <Col md={{ offset: 1 }}>GPA</Col>
-          <Col md={{ offset: 1 }}>3.63</Col>
-          <Col></Col>
-          <Col></Col>
-        </Row> */}
 
         <Row>
           <Col sm={{ size: 6, order: 2, offset: 1 }}>
-            <Table striped>
+            <Table borderless>
               <thead>
                 <tr>
                   <th></th>
@@ -46,44 +101,36 @@ class App extends React.Component {
               </thead>
               <tbody>
                 <tr>
-                  <th scope="row" style={{ width: '40%' }}>
+                  <th
+                    scope="row"
+                    style={{ width: '40%' }}
+                    className="student-table"
+                  >
                     Name
                   </th>
-                  <td>John Doe</td>
+                  <td className="student-table">John Doe</td>
                 </tr>
                 <tr>
-                  <th scope="row">GPA</th>
-                  <td>3.63</td>
+                  <th className="student-table" scope="row">
+                    GPA
+                  </th>
+                  <td className="student-table">3.63</td>
                 </tr>
                 <tr>
-                  <th scope="row">Major</th>
-                  <td>Computer Science</td>
+                  <th className="student-table" scope="row">
+                    Major
+                  </th>
+                  <td className="student-table">Computer Science</td>
                 </tr>
               </tbody>
             </Table>
             <br></br>
-
-            <Table striped>
-              <thead>
-                <tr>
-                  <th style={{ width: '40%' }}>Winter 2013</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Math 1C</td>
-                  <td>B+</td>
-                </tr>
-                <tr>
-                  <td>Comp Sci 100</td>
-                  <td>A</td>
-                </tr>
-                <tr>
-                  <td>Comp Sci 111</td>
-                  <td>A-</td>
-                </tr>
-              </tbody>
-            </Table>
+            {/* render individual course grades */}
+            {this.state.semesters === {} ? (
+              <div>loading...</div>
+            ) : (
+              this._renderGrades()
+            )}
             <br></br>
           </Col>
         </Row>
