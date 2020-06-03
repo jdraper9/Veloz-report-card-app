@@ -12,6 +12,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// register api middleware
+app.use('/api/students', require('./api/students'));
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);
 });

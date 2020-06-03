@@ -3,7 +3,7 @@ var { Pool } = require('pg');
 // need pg db password
 const CONNECTION_STRING =
   process.env.DATABASE_URL ||
-  'postgresql://postgres:399124@localhost:5432/weather-db';
+  'postgresql://postgres:399124@localhost:5432/test-db';
 const SSL = process.env.NODE_ENV === 'production';
 
 class Database {
